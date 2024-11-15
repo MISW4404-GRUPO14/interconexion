@@ -22,7 +22,7 @@ public class Controller {
 
         while (!fin) {
             view.printMenu();
-            int option = lector.nextInt();
+            int option = Integer.parseInt(lector.nextLine().trim());
 
             switch (option) {
                 case 1:
