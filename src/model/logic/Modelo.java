@@ -26,7 +26,7 @@ import model.data_structures.TablaHashSeparteChaining;
 import model.data_structures.VacioException;
 import model.data_structures.Vertex;
 import model.data_structures.YoutubeVideo;
-import utils.Ordenamiento;
+import utils.OrdenamientoContexto;
 
 
 /**
@@ -406,7 +406,7 @@ public class Modelo {
 		
 		Comparator<Country> comparador=null;
 
-		Ordenamiento<Country> algsOrdenamientoEventos=new Ordenamiento<Country>();
+		OrdenamientoContexto<Country> algsOrdenamientoEventos=new OrdenamientoContexto<Country>();
 
 		comparador= new ComparadorXKm();
 
@@ -415,7 +415,7 @@ public class Modelo {
 
 			if (lista!=null)
 			{
-				algsOrdenamientoEventos.ordenarMergeSort(unificado, comparador, true);
+				algsOrdenamientoEventos.ordenar(lista, comparador, false);
 			}	
 		}
 		catch (PosException | VacioException| NullException  e) 
@@ -459,7 +459,7 @@ public class Modelo {
 		{
 			Comparator<Vertex<String, Landing>> comparador=null;
 
-			Ordenamiento<Vertex<String, Landing>> algsOrdenamientoEventos=new Ordenamiento<Vertex<String, Landing>>();;
+			OrdenamientoContexto<Vertex<String, Landing>> algsOrdenamientoEventos=new OrdenamientoContexto<Vertex<String, Landing>>();;
 
 			comparador= new Vertex.ComparadorXKey();
 
@@ -469,7 +469,7 @@ public class Modelo {
 
 				if (lista!=null)
 				{
-					algsOrdenamientoEventos.ordenarMergeSort(lista, comparador, false);
+					algsOrdenamientoEventos.ordenar(lista, comparador, false);
 
 					for(int i=1; i<=lista.size(); i++)
 					{
@@ -513,7 +513,7 @@ public class Modelo {
 		{
 			Comparator<Country> comparador=null;
 
-			Ordenamiento<Country> algsOrdenamientoEventos=new Ordenamiento<Country>();;
+			OrdenamientoContexto<Country> algsOrdenamientoEventos=new OrdenamientoContexto<Country>();;
 
 			comparador= new Country.ComparadorXNombre();
 
@@ -522,7 +522,7 @@ public class Modelo {
 
 				if (lista!=null)
 				{
-					algsOrdenamientoEventos.ordenarMergeSort(lista, comparador, false);
+					algsOrdenamientoEventos.ordenar(lista, comparador, false);
 				}
 
 					for(int i=1; i<=lista.size(); i++)
@@ -572,7 +572,7 @@ public class Modelo {
 
 		Comparator<Vertex<String, Landing>> comparador=null;
 
-		Ordenamiento<Vertex<String, Landing>> algsOrdenamientoEventos=new Ordenamiento<Vertex<String, Landing>>();;
+		OrdenamientoContexto<Vertex<String, Landing>> algsOrdenamientoEventos=new OrdenamientoContexto<Vertex<String, Landing>>();;
 
 		comparador= new Vertex.ComparadorXKey();
 		
@@ -584,7 +584,7 @@ public class Modelo {
 
 			if (lista!=null)
 			{
-				algsOrdenamientoEventos.ordenarMergeSort(lista, comparador, false);
+				algsOrdenamientoEventos.ordenar(lista, comparador, false);
 
 				for(int i=1; i<=lista.size(); i++)
 				{
@@ -877,7 +877,7 @@ public class Modelo {
 	private static float distancia(double lon1, double lat1, double lon2, double lat2) 
 	{
 
-		double earthRadius = 6371; // km
+		double earthRadius = 6371; //
 
 		lat1 = Math.toRadians(lat1);
 		lon1 = Math.toRadians(lon1);
