@@ -458,32 +458,27 @@ public class Modelo {
 		}
 	}
 
-	public ITablaSimbolos unificarHash(ILista lista) {
+	public ITablaSimbolos unificarHash(ILista<Vertex<String, Landing>> lista) {
 
-		Comparator<Vertex<String, Landing>> comparador = null;
-
-		OrdenamientoContexto<Vertex<String, Landing>> algsOrdenamientoEventos = new OrdenamientoContexto<Vertex<String, Landing>>();
-		;
-
-		comparador = new Vertex.ComparadorXKey();
+		Comparator<Vertex<String, Landing>> comparador = new Vertex.ComparadorXKey();
+		OrdenamientoContexto<Vertex<String, Landing>> algsOrdenamientoEventos = new OrdenamientoContexto<>();
 
 		ITablaSimbolos tabla = new TablaHashSeparteChaining<>(2);
 
 		try {
-
 			if (lista != null) {
 				algsOrdenamientoEventos.ordenar(lista, comparador, false);
 
 				for (int i = 1; i <= lista.size(); i++) {
-					Vertex actual = (Vertex) lista.getElement(i);
-					Vertex siguiente = (Vertex) lista.getElement(i + 1);
+					Vertex<String, Landing> actual = lista.getElement(i);
+					Vertex<String, Landing> siguiente = (i + 1 <= lista.size()) ? lista.getElement(i + 1) : null;
 
 					if (siguiente != null) {
 						if (comparador.compare(actual, siguiente) != 0) {
 							tabla.put(actual.getId(), actual);
 						}
 					} else {
-						Vertex anterior = (Vertex) lista.getElement(i - 1);
+						Vertex<String, Landing> anterior = (i - 1 > 0) ? lista.getElement(i - 1) : null;
 
 						if (anterior != null) {
 							if (comparador.compare(anterior, actual) != 0) {
@@ -493,11 +488,9 @@ public class Modelo {
 							tabla.put(actual.getId(), actual);
 						}
 					}
-
 				}
 			}
 		} catch (PosException | VacioException | NullException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return tabla;
