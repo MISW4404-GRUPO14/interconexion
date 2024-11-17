@@ -390,108 +390,72 @@ public class Modelo {
 	public String req5String(String punto) {
 		ILista afectados = req5(punto);
 
-		StringBuilder fragmento = new StringBuilder("La cantidad de paises afectados es: " + afectados.size() + "\n Los paises afectados son: ");
+		StringBuilder fragmento = new StringBuilder(
+				"La cantidad de paises afectados es: " + afectados.size() + "\n Los paises afectados son: ");
 
 		for (int i = 1; i <= afectados.size(); i++) {
 			try {
 				Country country = (Country) afectados.getElement(i);
 				fragmento.append("\n Nombre: ").append(country.getCountryName())
-						 .append("\n Distancia al landing point: ").append(country.getDistlan());
+						.append("\n Distancia al landing point: ").append(country.getDistlan());
 			} catch (PosException | VacioException e) {
 				// Manejar la excepción de manera adecuada
-				fragmento.append("\n Error al obtener el país en la posición ").append(i).append(": ").append(e.getMessage());
+				fragmento.append("\n Error al obtener el país en la posición ").append(i).append(": ")
+						.append(e.getMessage());
 			}
 		}
 
 		return fragmento.toString();
 	}
-	public ILista unificar(ILista lista, String criterio) {
 
+	public ILista unificar(ILista lista, String criterio) {
 		ILista lista2 = new ArregloDinamico(1);
 
-		if (criterio.equals("Vertice")) {
-			Comparator<Vertex<String, Landing>> comparador = null;
+		if (lista == null) {
+			return lista2;
+		}
 
-			OrdenamientoContexto<Vertex<String, Landing>> algsOrdenamientoEventos = new OrdenamientoContexto<Vertex<String, Landing>>();
-			;
-
-			comparador = new Vertex.ComparadorXKey();
-
-			try {
-
-				if (lista != null) {
-					algsOrdenamientoEventos.ordenar(lista, comparador, false);
-
-					for (int i = 1; i <= lista.size(); i++) {
-						Vertex actual = (Vertex) lista.getElement(i);
-						Vertex siguiente = (Vertex) lista.getElement(i + 1);
-
-						if (siguiente != null) {
-							if (comparador.compare(actual, siguiente) != 0) {
-								lista2.insertElement(actual, lista2.size() + 1);
-							}
-						} else {
-							Vertex anterior = (Vertex) lista.getElement(i - 1);
-
-							if (anterior != null) {
-								if (comparador.compare(anterior, actual) != 0) {
-									lista2.insertElement(actual, lista2.size() + 1);
-								}
-							} else {
-								lista2.insertElement(actual, lista2.size() + 1);
-							}
-						}
-
-					}
-				}
-			} catch (PosException | VacioException | NullException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+		try {
+			if (criterio.equals("Vertice")) {
+				Comparator<Vertex<String, Landing>> comparador = new Vertex.ComparadorXKey();
+				OrdenamientoContexto<Vertex<String, Landing>> algsOrdenamientoEventos = new OrdenamientoContexto<>();
+				algsOrdenamientoEventos.ordenar(lista, comparador, false);
+				unificarLista(lista, lista2, comparador);
+			} else {
+				Comparator<Country> comparador = new Country.ComparadorXNombre();
+				OrdenamientoContexto<Country> algsOrdenamientoEventos = new OrdenamientoContexto<>();
+				algsOrdenamientoEventos.ordenar(lista, comparador, false);
+				unificarLista(lista, lista2, comparador);
 			}
-		} else {
-			Comparator<Country> comparador = null;
-
-			OrdenamientoContexto<Country> algsOrdenamientoEventos = new OrdenamientoContexto<Country>();
-			;
-
-			comparador = new Country.ComparadorXNombre();
-
-			try {
-
-				if (lista != null) {
-					algsOrdenamientoEventos.ordenar(lista, comparador, false);
-				}
-
-				for (int i = 1; i <= lista.size(); i++) {
-					Country actual = (Country) lista.getElement(i);
-					Country siguiente = (Country) lista.getElement(i + 1);
-
-					if (siguiente != null) {
-						if (comparador.compare(actual, siguiente) != 0) {
-							lista2.insertElement(actual, lista2.size() + 1);
-						}
-					} else {
-						Country anterior = (Country) lista.getElement(i - 1);
-
-						if (anterior != null) {
-							if (comparador.compare(anterior, actual) != 0) {
-								lista2.insertElement(actual, lista2.size() + 1);
-							}
-						} else {
-							lista2.insertElement(actual, lista2.size() + 1);
-						}
-					}
-
-				}
-			}
-
-			catch (PosException | VacioException | NullException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		} catch (PosException | VacioException | NullException e) {
+			e.printStackTrace();
 		}
 
 		return lista2;
+	}
+
+	private <T> void unificarLista(ILista lista, ILista lista2, Comparator<T> comparador)
+			throws PosException, VacioException, NullException {
+		for (int i = 1; i <= lista.size(); i++) {
+			T actual = (T) lista.getElement(i);
+			T siguiente = (T) lista.getElement(i + 1);
+
+			if (siguiente != null) {
+				if (comparador.compare(actual, siguiente) != 0) {
+					lista2.insertElement(actual, lista2.size() + 1);
+				}
+			} else {
+				T anterior = (T) lista.getElement(i - 1);
+
+				if (anterior != null) {
+					if (comparador.compare(anterior, actual) != 0) {
+						lista2.insertElement(actual, lista2.size() + 1);
+					}
+				} else {
+					lista2.insertElement(actual, lista2.size() + 1);
+				}
+			}
+		}
 	}
 
 	public ITablaSimbolos unificarHash(ILista lista) {
