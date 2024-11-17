@@ -55,11 +55,11 @@ public class Modelo {
 	 */
 	public Modelo(int capacidad) {
 		datos = new ArregloDinamico<>(capacidad);
-		grafo = new GrafoListaAdyacencia(2);
-		paises = new TablaHashLinearProbing(2);
-		points = new TablaHashLinearProbing(2);
-		landingidtabla = new TablaHashSeparteChaining(2);
-		nombrecodigo = new TablaHashSeparteChaining(2);
+		grafo = new GrafoListaAdyacencia(capacidad);
+		paises = new TablaHashLinearProbing(capacidad);
+		points = new TablaHashLinearProbing(capacidad);
+		landingidtabla = new TablaHashSeparteChaining(capacidad);
+		nombrecodigo = new TablaHashSeparteChaining(capacidad);
 	}
 
 	/**
