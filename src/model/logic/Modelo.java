@@ -327,11 +327,10 @@ public class Modelo {
 
 		ILista countries = new ArregloDinamico<>(1);
 		try {
-			Country paisoriginal = (Country) paises.get(((Landing) ((Vertex) lista.getElement(1)).getInfo()).getPais());
+			Country paisoriginal = obtenerPaisOriginal(lista);
 			countries.insertElement(paisoriginal, countries.size() + 1);
 		} catch (PosException | VacioException | NullException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			manejarExcepcion(e1);
 		}
 
 		for (int i = 1; i <= lista.size(); i++) {
@@ -341,47 +340,51 @@ public class Modelo {
 
 				for (int j = 1; j <= arcos.size(); j++) {
 					Vertex vertice2 = ((Edge) arcos.getElement(j)).getDestination();
-
-					Country pais = null;
-					if (vertice2.getInfo().getClass().getName().equals("model.data_structures.Landing")) {
-						Landing landing = (Landing) vertice2.getInfo();
-						pais = (Country) paises.get(landing.getPais());
-						countries.insertElement(pais, countries.size() + 1);
-
-						float distancia = distancia(pais.getLongitude(), pais.getLatitude(), landing.getLongitude(),
-								landing.getLatitude());
-
-						pais.setDistlan(distancia);
-					} else {
-						pais = (Country) vertice2.getInfo();
-					}
+					procesarVertice(vertice2, countries);
 				}
 
 			} catch (PosException | VacioException | NullException e) {
-				e.printStackTrace();
+				manejarExcepcion(e);
 			}
 		}
 
 		ILista unificado = unificar(countries, "Country");
 
-		Comparator<Country> comparador = null;
-
-		OrdenamientoContexto<Country> algsOrdenamientoEventos = new OrdenamientoContexto<Country>();
-
-		comparador = new ComparadorXKm();
+		Comparator<Country> comparador = new ComparadorXKm();
+		OrdenamientoContexto<Country> algsOrdenamientoEventos = new OrdenamientoContexto<>();
 
 		try {
-
 			if (lista != null) {
 				algsOrdenamientoEventos.ordenar(lista, comparador, false);
 			}
 		} catch (PosException | VacioException | NullException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			manejarExcepcion(e);
 		}
 
 		return unificado;
+	}
 
+	private Country obtenerPaisOriginal(ILista lista) throws PosException, VacioException, NullException {
+		return (Country) paises.get(((Landing) ((Vertex) lista.getElement(1)).getInfo()).getPais());
+	}
+
+	private void procesarVertice(Vertex vertice2, ILista countries) throws PosException, VacioException, NullException {
+		Country pais = null;
+		if (vertice2.getInfo().getClass().getName().equals("model.data_structures.Landing")) {
+			Landing landing = (Landing) vertice2.getInfo();
+			pais = (Country) paises.get(landing.getPais());
+			countries.insertElement(pais, countries.size() + 1);
+
+			float distancia = distancia(pais.getLongitude(), pais.getLatitude(), landing.getLongitude(), landing.getLatitude());
+			pais.setDistlan(distancia);
+		} else {
+			pais = (Country) vertice2.getInfo();
+		}
+	}
+
+	private void manejarExcepcion(Exception e) {
+		// Manejo adecuado de excepciones
+		e.printStackTrace();
 	}
 
 	public String req5String(String punto) {
