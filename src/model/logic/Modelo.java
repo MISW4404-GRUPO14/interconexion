@@ -181,10 +181,10 @@ public class Modelo {
 					}
 
 					fragmento.append("\n Landing ")
-							 .append("\n Nombre: ").append(landing.getName())
-							 .append("\n País: ").append(landing.getPais())
-							 .append("\n Id: ").append(landing.getId())
-							 .append("\n Cantidad: ").append(cantidad);
+							.append("\n Nombre: ").append(landing.getName())
+							.append("\n País: ").append(landing.getPais())
+							.append("\n Id: ").append(landing.getId())
+							.append("\n Cantidad: ").append(cantidad);
 
 					contador++;
 				}
@@ -375,7 +375,8 @@ public class Modelo {
 			pais = (Country) paises.get(landing.getPais());
 			countries.insertElement(pais, countries.size() + 1);
 
-			float distancia = distancia(pais.getLongitude(), pais.getLatitude(), landing.getLongitude(), landing.getLatitude());
+			float distancia = distancia(pais.getLongitude(), pais.getLatitude(), landing.getLongitude(),
+					landing.getLatitude());
 			pais.setDistlan(distancia);
 		} else {
 			pais = (Country) vertice2.getInfo();
@@ -516,7 +517,8 @@ public class Modelo {
 					float population = Float.parseFloat(record.get(6).replace(".", ""));
 					double users = Double.parseDouble(record.get(7).replace(".", ""));
 
-					Country pais = new Country(countryName, capitalName, latitude, longitude, code, continentName, population, users);
+					Country pais = new Country(countryName, capitalName, latitude, longitude, code, continentName,
+							population, users);
 					grafo.insertVertex(capitalName, pais);
 					paises.put(countryName, pais);
 				}
@@ -565,17 +567,20 @@ public class Modelo {
 					Country pais2 = getCountryByName(nombrepais2);
 
 					if (pais1 != null) {
-						float weight = distancia(pais1.getLongitude(), pais1.getLatitude(), landing1.getLongitude(), landing1.getLatitude());
+						float weight = distancia(pais1.getLongitude(), pais1.getLatitude(), landing1.getLongitude(),
+								landing1.getLatitude());
 						grafo.addEdge(pais1.getCapitalName(), landing1.getLandingId() + cableid, weight);
 					}
 
 					if (pais2 != null) {
-						float weight2 = distancia(pais2.getLongitude(), pais2.getLatitude(), landing1.getLongitude(), landing1.getLatitude());
+						float weight2 = distancia(pais2.getLongitude(), pais2.getLatitude(), landing1.getLongitude(),
+								landing1.getLatitude());
 						grafo.addEdge(pais2.getCapitalName(), landing2.getLandingId() + cableid, weight2);
 					}
 
 					if (grafo.getEdge(landing1.getLandingId() + cableid, landing2.getLandingId() + cableid) == null) {
-						float weight3 = distancia(landing1.getLongitude(), landing1.getLatitude(), landing2.getLongitude(), landing2.getLatitude());
+						float weight3 = distancia(landing1.getLongitude(), landing1.getLatitude(),
+								landing2.getLongitude(), landing2.getLatitude());
 						grafo.addEdge(landing1.getLandingId() + cableid, landing2.getLandingId() + cableid, weight3);
 					}
 
