@@ -390,22 +390,21 @@ public class Modelo {
 	public String req5String(String punto) {
 		ILista afectados = req5(punto);
 
-		String fragmento = "La cantidad de paises afectados es: " + afectados.size() + "\n Los paises afectados son: ";
+		StringBuilder fragmento = new StringBuilder("La cantidad de paises afectados es: " + afectados.size() + "\n Los paises afectados son: ");
 
 		for (int i = 1; i <= afectados.size(); i++) {
 			try {
-				fragmento += "\n Nombre: " + ((Country) afectados.getElement(i)).getCountryName()
-						+ "\n Distancia al landing point: " + ((Country) afectados.getElement(i)).getDistlan();
+				Country country = (Country) afectados.getElement(i);
+				fragmento.append("\n Nombre: ").append(country.getCountryName())
+						 .append("\n Distancia al landing point: ").append(country.getDistlan());
 			} catch (PosException | VacioException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				// Manejar la excepción de manera adecuada
+				fragmento.append("\n Error al obtener el país en la posición ").append(i).append(": ").append(e.getMessage());
 			}
 		}
 
-		return fragmento;
-
+		return fragmento.toString();
 	}
-
 	public ILista unificar(ILista lista, String criterio) {
 
 		ILista lista2 = new ArregloDinamico(1);
