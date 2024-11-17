@@ -165,36 +165,35 @@ public class Modelo {
 	}
 
 	public String req2String() {
-		String fragmento = "";
-
+		StringBuilder fragmento = new StringBuilder();
 		ILista lista = landingidtabla.valueSet();
-
-		int cantidad = 0;
-
 		int contador = 0;
 
 		for (int i = 1; i <= lista.size(); i++) {
 			try {
-				if (((ILista) lista.getElement(i)).size() > 1 && contador <= 10) {
-					Landing landing = (Landing) ((Vertex) ((ILista) lista.getElement(i)).getElement(1)).getInfo();
+				ILista sublist = (ILista) lista.getElement(i);
+				if (sublist.size() > 1 && contador <= 10) {
+					Landing landing = (Landing) ((Vertex) sublist.getElement(1)).getInfo();
+					int cantidad = 0;
 
-					for (int j = 1; j <= ((ILista) lista.getElement(i)).size(); j++) {
-						cantidad += ((Vertex) ((ILista) lista.getElement(i)).getElement(j)).edges().size();
+					for (int j = 1; j <= sublist.size(); j++) {
+						cantidad += ((Vertex) sublist.getElement(j)).edges().size();
 					}
 
-					fragmento += "\n Landing " + "\n Nombre: " + landing.getName() + "\n País: " + landing.getPais()
-							+ "\n Id: " + landing.getId() + "\n Cantidad: " + cantidad;
+					fragmento.append("\n Landing ")
+							 .append("\n Nombre: ").append(landing.getName())
+							 .append("\n País: ").append(landing.getPais())
+							 .append("\n Id: ").append(landing.getId())
+							 .append("\n Cantidad: ").append(cantidad);
 
 					contador++;
 				}
 			} catch (PosException | VacioException e) {
 				e.printStackTrace();
 			}
-
 		}
 
-		return fragmento;
-
+		return fragmento.toString();
 	}
 
 	public String req3String(String pais1, String pais2) {
