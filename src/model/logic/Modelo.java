@@ -54,12 +54,12 @@ public class Modelo {
 	 * @param tamano
 	 */
 	public Modelo(int capacidad) {
-		datos = new ArregloDinamico<>(capacidad);
-		grafo = new GrafoListaAdyacencia(capacidad);
-		paises = new TablaHashLinearProbing(capacidad);
-		points = new TablaHashLinearProbing(capacidad);
-		landingidtabla = new TablaHashSeparteChaining(capacidad);
-		nombrecodigo = new TablaHashSeparteChaining(capacidad);
+		this.datos = new ArregloDinamico<>(capacidad);
+		this.grafo = new GrafoListaAdyacencia(capacidad);
+		this.paises = new TablaHashLinearProbing(capacidad);
+		this.points = new TablaHashLinearProbing(capacidad);
+		this.landingidtabla = new TablaHashSeparteChaining(capacidad);
+		this.nombrecodigo = new TablaHashSeparteChaining(capacidad);
 	}
 
 	/**
