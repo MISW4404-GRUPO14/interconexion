@@ -253,76 +253,72 @@ public class Modelo {
 	}
 
 	public String req4String() {
-		String fragmento = "";
-		ILista lista1 = landingidtabla.valueSet();
-
+		StringBuilder fragmento = new StringBuilder();
+		ILista listaVertices = landingidtabla.valueSet();
 		String llave = "";
-
-		int distancia = 0;
+		int distanciaTotal = 0;
 
 		try {
-			int max = 0;
-			for (int i = 1; i <= lista1.size(); i++) {
-				if (((ILista) lista1.getElement(i)).size() > max) {
-					max = ((ILista) lista1.getElement(i)).size();
-					llave = (String) ((Vertex) ((ILista) lista1.getElement(i)).getElement(1)).getId();
+			int maxVertices = 0;
+			for (int i = 1; i <= listaVertices.size(); i++) {
+				ILista listaActual = (ILista) listaVertices.getElement(i);
+				if (listaActual.size() > maxVertices) {
+					maxVertices = listaActual.size();
+					llave = (String) ((Vertex) listaActual.getElement(1)).getId();
 				}
 			}
 
-			ILista lista2 = grafo.mstPrimLazy(llave);
-
-			ITablaSimbolos tabla = new TablaHashSeparteChaining<>(2);
+			ILista arcosMST = grafo.mstPrimLazy(llave);
+			ITablaSimbolos tablaSimbolos = new TablaHashSeparteChaining<>(2);
 			ILista candidatos = new ArregloDinamico<>(1);
-			for (int i = 1; i <= lista2.size(); i++) {
-				Edge arco = ((Edge) lista2.getElement(i));
-				distancia += arco.getWeight();
+
+			for (int i = 1; i <= arcosMST.size(); i++) {
+				Edge arco = (Edge) arcosMST.getElement(i);
+				distanciaTotal += arco.getWeight();
 
 				candidatos.insertElement(arco.getSource(), candidatos.size() + 1);
-
 				candidatos.insertElement(arco.getDestination(), candidatos.size() + 1);
 
-				tabla.put(arco.getDestination().getId(), arco.getSource());
+				tablaSimbolos.put(arco.getDestination().getId(), arco.getSource());
 			}
 
-			ILista unificado = unificar(candidatos, "Vertice");
-			fragmento += " La cantidad de nodos conectada a la red de expansión mínima es: " + unificado.size()
-					+ "\n El costo total es de: " + distancia;
+			ILista verticesUnificados = unificar(candidatos, "Vertice");
+			fragmento.append(" La cantidad de nodos conectada a la red de expansión mínima es: ")
+					.append(verticesUnificados.size())
+					.append("\n El costo total es de: ")
+					.append(distanciaTotal);
 
-			int maximo = 0;
-			int contador = 0;
-			PilaEncadenada caminomax = new PilaEncadenada();
-			for (int i = 1; i <= unificado.size(); i++) {
+			int maximoCamino = 0;
+			PilaEncadenada caminoMaximo = new PilaEncadenada();
 
-				PilaEncadenada path = new PilaEncadenada();
-				String idBusqueda = (String) ((Vertex) unificado.getElement(i)).getId();
+			for (int i = 1; i <= verticesUnificados.size(); i++) {
+				PilaEncadenada caminoActual = new PilaEncadenada();
+				String idBusqueda = (String) ((Vertex) verticesUnificados.getElement(i)).getId();
 				Vertex actual;
+				int contador = 0;
 
-				while ((actual = (Vertex) tabla.get(idBusqueda)) != null && actual.getInfo() != null) {
-					path.push(actual);
-					idBusqueda = (String) ((Vertex) actual).getId();
+				while ((actual = (Vertex) tablaSimbolos.get(idBusqueda)) != null && actual.getInfo() != null) {
+					caminoActual.push(actual);
+					idBusqueda = (String) actual.getId();
 					contador++;
 				}
 
-				if (contador > maximo) {
-					caminomax = path;
+				if (contador > maximoCamino) {
+					maximoCamino = contador;
+					caminoMaximo = caminoActual;
 				}
 			}
 
-			fragmento += "\n La rama más larga está dada por lo vértices: ";
-			for (int i = 1; i <= caminomax.size(); i++) {
-				Vertex pop = (Vertex) caminomax.pop();
-				fragmento += "\n Id " + i + " : " + pop.getId();
+			fragmento.append("\n La rama más larga está dada por los vértices: ");
+			for (int i = 1; i <= caminoMaximo.size(); i++) {
+				Vertex vertice = (Vertex) caminoMaximo.pop();
+				fragmento.append("\n Id ").append(i).append(" : ").append(vertice.getId());
 			}
-		} catch (PosException | VacioException | NullException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+		} catch (PosException | VacioException | NullException e) {
+			e.printStackTrace();
 		}
 
-		if (fragmento.equals("")) {
-			return "No hay ninguna rama";
-		} else {
-			return fragmento;
-		}
+		return fragmento.length() == 0 ? "No hay ninguna rama" : fragmento.toString();
 	}
 
 	public ILista req5(String punto) {
