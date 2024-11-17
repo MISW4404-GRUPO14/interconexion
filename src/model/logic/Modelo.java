@@ -123,17 +123,19 @@ public class Modelo {
 
 	public String req1String(String punto1, String punto2) {
 		ITablaSimbolos tablaSimbolos = grafo.getSSC();
-		ILista listaValores = tablaSimbolos.valueSet();
+		ILista<Integer> listaValores = tablaSimbolos.valueSet();
 		int maxComponentes = 0;
 
+		// Encontrar el valor máximo en la lista de valores
 		for (int i = 1; i <= listaValores.size(); i++) {
 			try {
-				int valorActual = (int) listaValores.getElement(i);
+				int valorActual = listaValores.getElement(i);
 				if (valorActual > maxComponentes) {
 					maxComponentes = valorActual;
 				}
 			} catch (PosException | VacioException e) {
-				System.out.println(e.toString());
+				// Usar un logger en lugar de System.out.println
+				Logger.getLogger(Modelo.class.getName()).log(Level.SEVERE, null, e);
 			}
 		}
 
@@ -141,13 +143,13 @@ public class Modelo {
 		resultado.append("La cantidad de componentes conectados es: ").append(maxComponentes);
 
 		try {
-			String codigo1 = (String) nombrecodigo.get(punto1);
-			String codigo2 = (String) nombrecodigo.get(punto2);
-			Vertex vertice1 = (Vertex) ((ILista) landingidtabla.get(codigo1)).getElement(1);
-			Vertex vertice2 = (Vertex) ((ILista) landingidtabla.get(codigo2)).getElement(1);
+			String codigo1 = nombrecodigo.get(punto1);
+			String codigo2 = nombrecodigo.get(punto2);
+			Vertex vertice1 = ((ILista<Vertex>) landingidtabla.get(codigo1)).getElement(1);
+			Vertex vertice2 = ((ILista<Vertex>) landingidtabla.get(codigo2)).getElement(1);
 
-			int idVertice1 = (int) tablaSimbolos.get(vertice1.getId());
-			int idVertice2 = (int) tablaSimbolos.get(vertice2.getId());
+			int idVertice1 = tablaSimbolos.get(vertice1.getId());
+			int idVertice2 = tablaSimbolos.get(vertice2.getId());
 
 			if (idVertice1 == idVertice2) {
 				resultado.append("\nLos landing points pertenecen al mismo clúster");
@@ -155,7 +157,8 @@ public class Modelo {
 				resultado.append("\nLos landing points no pertenecen al mismo clúster");
 			}
 		} catch (PosException | VacioException e) {
-			e.printStackTrace();
+			// Usar un logger en lugar de e.printStackTrace()
+			Logger.getLogger(Modelo.class.getName()).log(Level.SEVERE, null, e);
 		}
 
 		return resultado.toString();
