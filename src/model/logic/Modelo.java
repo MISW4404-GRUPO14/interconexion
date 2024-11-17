@@ -80,7 +80,12 @@ public class Modelo {
 	 * @throws PosException
 	 */
 	public YoutubeVideo getElement(int i) throws PosException, VacioException {
-		return (YoutubeVideo) datos.getElement(i);
+		Object element = datos.getElement(i);
+		if (element instanceof YoutubeVideo) {
+			return (YoutubeVideo) element;
+		} else {
+			throw new ClassCastException("Element is not of type YoutubeVideo");
+		}
 	}
 
 	public String toString() {
