@@ -205,52 +205,51 @@ public class Modelo {
 		PilaEncadenada pila = grafo.minPath(capital1, capital2);
 
 		float distancia = 0;
-
-		String fragmento = "Ruta: ";
-
+		StringBuilder fragmento = new StringBuilder("Ruta: ");
 		float disttotal = 0;
 
-		double longorigen = 0;
-		double longdestino = 0;
-		double latorigen = 0;
-		double latdestino = 0;
-		String origennombre = "";
-		String destinonombre = "";
-
 		while (!pila.isEmpty()) {
-			Edge arco = ((Edge) pila.pop());
+			Edge arco = (Edge) pila.pop();
+			Object sourceInfo = arco.getSource().getInfo();
+			Object destInfo = arco.getDestination().getInfo();
 
-			if (arco.getSource().getInfo().getClass().getName().equals("model.data_structures.Landing")) {
-				longorigen = ((Landing) arco.getSource().getInfo()).getLongitude();
-				latorigen = ((Landing) arco.getSource().getInfo()).getLongitude();
-				origennombre = ((Landing) arco.getSource().getInfo()).getLandingId();
+			double longorigen = 0, longdestino = 0, latorigen = 0, latdestino = 0;
+			String origennombre = "", destinonombre = "";
+
+			if (sourceInfo instanceof Landing) {
+				Landing landing = (Landing) sourceInfo;
+				longorigen = landing.getLongitude();
+				latorigen = landing.getLatitude();
+				origennombre = landing.getLandingId();
+			} else if (sourceInfo instanceof Country) {
+				Country country = (Country) sourceInfo;
+				longorigen = country.getLongitude();
+				latorigen = country.getLatitude();
+				origennombre = country.getCapitalName();
 			}
-			if (arco.getSource().getInfo().getClass().getName().equals("model.data_structures.Country")) {
-				longorigen = ((Country) arco.getSource().getInfo()).getLongitude();
-				latorigen = ((Country) arco.getSource().getInfo()).getLongitude();
-				origennombre = ((Country) arco.getSource().getInfo()).getCapitalName();
-			}
-			if (arco.getDestination().getInfo().getClass().getName().equals("model.data_structures.Landing")) {
-				latdestino = ((Landing) arco.getDestination().getInfo()).getLatitude();
-				longdestino = ((Landing) arco.getDestination().getInfo()).getLatitude();
-				destinonombre = ((Landing) arco.getDestination().getInfo()).getLandingId();
-			}
-			if (arco.getDestination().getInfo().getClass().getName().equals("model.data_structures.Country")) {
-				longdestino = ((Country) arco.getDestination().getInfo()).getLatitude();
-				latdestino = ((Country) arco.getDestination().getInfo()).getLatitude();
-				destinonombre = ((Country) arco.getDestination().getInfo()).getCapitalName();
+
+			if (destInfo instanceof Landing) {
+				Landing landing = (Landing) destInfo;
+				longdestino = landing.getLongitude();
+				latdestino = landing.getLatitude();
+				destinonombre = landing.getLandingId();
+			} else if (destInfo instanceof Country) {
+				Country country = (Country) destInfo;
+				longdestino = country.getLongitude();
+				latdestino = country.getLatitude();
+				destinonombre = country.getCapitalName();
 			}
 
 			distancia = distancia(longdestino, latdestino, longorigen, latorigen);
-			fragmento += "\n \n Origen: " + origennombre + "  Destino: " + destinonombre + "  Distancia: " + distancia;
+			fragmento.append("\n \n Origen: ").append(origennombre)
+					.append("  Destino: ").append(destinonombre)
+					.append("  Distancia: ").append(distancia);
 			disttotal += distancia;
-
 		}
 
-		fragmento += "\n Distancia total: " + disttotal;
+		fragmento.append("\n Distancia total: ").append(disttotal);
 
-		return fragmento;
-
+		return fragmento.toString();
 	}
 
 	public String req4String() {
