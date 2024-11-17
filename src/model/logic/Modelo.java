@@ -88,33 +88,37 @@ public class Modelo {
 		}
 	}
 
+	@Override
 	public String toString() {
-		String fragmento = "Info básica:";
+		StringBuilder fragmento = new StringBuilder("Info básica:");
 		final String NOMBRE = "\n Nombre: ";
 
-		fragmento += "\n El número total de conexiones (arcos) en el grafo es: " + grafo.edges().size();
-		fragmento += "\n El número total de puntos de conexión (landing points) en el grafo: "
-				+ grafo.vertices().size();
-		fragmento += "\n La cantidad total de países es:  " + paises.size();
-		Landing landing = null;
+		fragmento.append("\n El número total de conexiones (arcos) en el grafo es: ").append(grafo.edges().size());
+		fragmento.append("\n El número total de puntos de conexión (landing points) en el grafo: ")
+				.append(grafo.vertices().size());
+		fragmento.append("\n La cantidad total de países es: ").append(paises.size());
+
 		try {
-			landing = (Landing) ((NodoTS<String, Landing>) points.darListaNodos().getElement(1)).getValue();
-			fragmento += "\n Info primer landing point " + "\n Identificador: " + landing.getId() + NOMBRE
-					+ landing.getName()
-					+ " \n Latitud " + landing.getLatitude() + " \n Longitud" + landing.getLongitude();
-
-			Country pais = (Country) ((NodoTS<String, Country>) paises.darListaNodos().getElement(paises.darListaNodos().size()))
+			Landing primerLanding = (Landing) ((NodoTS<String, Landing>) points.darListaNodos().getElement(1))
 					.getValue();
+			fragmento.append("\n Info primer landing point ")
+					.append("\n Identificador: ").append(primerLanding.getId())
+					.append(NOMBRE).append(primerLanding.getName())
+					.append(" \n Latitud ").append(primerLanding.getLatitude())
+					.append(" \n Longitud ").append(primerLanding.getLongitude());
 
-			fragmento += "\n Info último país: " + "\n Capital: " + pais.getCapitalName() + "\n Población: "
-					+ pais.getPopulation() +
-					"\n Usuarios: " + pais.getUsers();
+			Country ultimoPais = (Country) ((NodoTS<String, Country>) paises.darListaNodos()
+					.getElement(paises.darListaNodos().size()))
+					.getValue();
+			fragmento.append("\n Info último país: ")
+					.append("\n Capital: ").append(ultimoPais.getCapitalName())
+					.append("\n Población: ").append(ultimoPais.getPopulation())
+					.append("\n Usuarios: ").append(ultimoPais.getUsers());
 		} catch (PosException | VacioException e) {
-			e.printStackTrace();
+			fragmento.append("\n Error al obtener información: ").append(e.getMessage());
 		}
 
-		return fragmento;
-
+		return fragmento.toString();
 	}
 
 	public String req1String(String punto1, String punto2) {
