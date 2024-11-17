@@ -118,21 +118,23 @@ public class Modelo {
 	}
 
 	public String req1String(String punto1, String punto2) {
-		ITablaSimbolos tabla = grafo.getSSC();
-		ILista lista = tabla.valueSet();
-		int max = 0;
-		for (int i = 1; i <= lista.size(); i++) {
+		ITablaSimbolos tablaSimbolos = grafo.getSSC();
+		ILista listaValores = tablaSimbolos.valueSet();
+		int maxComponentes = 0;
+
+		for (int i = 1; i <= listaValores.size(); i++) {
 			try {
-				if ((int) lista.getElement(i) > max) {
-					max = (int) lista.getElement(i);
+				int valorActual = (int) listaValores.getElement(i);
+				if (valorActual > maxComponentes) {
+					maxComponentes = valorActual;
 				}
 			} catch (PosException | VacioException e) {
 				System.out.println(e.toString());
 			}
-
 		}
 
-		String fragmento = "La cantidad de componentes conectados es: " + max;
+		StringBuilder resultado = new StringBuilder();
+		resultado.append("La cantidad de componentes conectados es: ").append(maxComponentes);
 
 		try {
 			String codigo1 = (String) nombrecodigo.get(punto1);
@@ -140,21 +142,19 @@ public class Modelo {
 			Vertex vertice1 = (Vertex) ((ILista) landingidtabla.get(codigo1)).getElement(1);
 			Vertex vertice2 = (Vertex) ((ILista) landingidtabla.get(codigo2)).getElement(1);
 
-			int elemento1 = (int) tabla.get(vertice1.getId());
-			int elemento2 = (int) tabla.get(vertice2.getId());
+			int idVertice1 = (int) tablaSimbolos.get(vertice1.getId());
+			int idVertice2 = (int) tablaSimbolos.get(vertice2.getId());
 
-			if (elemento1 == elemento2) {
-				fragmento += "\n Los landing points pertenecen al mismo clúster";
+			if (idVertice1 == idVertice2) {
+				resultado.append("\nLos landing points pertenecen al mismo clúster");
 			} else {
-				fragmento += "\n Los landing points no pertenecen al mismo clúster";
+				resultado.append("\nLos landing points no pertenecen al mismo clúster");
 			}
 		} catch (PosException | VacioException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-		return fragmento;
-
+		return resultado.toString();
 	}
 
 	public String req2String() {
