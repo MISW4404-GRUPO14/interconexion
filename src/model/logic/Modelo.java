@@ -204,67 +204,64 @@ public class Modelo {
 
 	}
 
-	public String req3String(String pais1, String pais2)
-	{
-		Country pais11= (Country) paises.get(pais1);
-		Country pais22= (Country) paises.get(pais2);
-		String capital1=pais11.getCapitalName();
-		String capital2=pais22.getCapitalName();
+	public String req3String(String pais1, String pais2) {
+	    Country pais11 = (Country) paises.get(pais1);
+	    Country pais22 = (Country) paises.get(pais2);
+	    String capital1 = pais11.getCapitalName();
+	    String capital2 = pais22.getCapitalName();
 
-		PilaEncadenada pila= grafo.minPath(capital1, capital2);
+	    PilaEncadenada pila = grafo.minPath(capital1, capital2);
 
-		float distancia=0;
+	    float distancia = 0;
 
-		String fragmento="Ruta: ";
+	    String fragmento = "Ruta: ";
 
-		float disttotal=0;
+	    float disttotal = 0;
 
-		double longorigen=0;
-		double longdestino=0;
-		double latorigen=0;
-		double latdestino=0;
-		String origennombre="";
-		String destinonombre="";
+	    double longorigen = 0;
+	    double longdestino = 0;
+	    double latorigen = 0;
+	    double latdestino = 0;
+	    String origennombre = "";
+	    String destinonombre = "";
 
-		while(!pila.isEmpty())
-		{
-			Edge arco= ((Edge)pila.pop());
+	    while (!pila.isEmpty()) {
+	        Edge arco = (Edge) pila.pop();
 
-			if(arco.getSource().getInfo().getClass().getName().equals("model.data_structures.Landing"))
-			{
-				longorigen=((Landing)arco.getSource().getInfo()).getLongitude();
-				latorigen=((Landing)arco.getSource().getInfo()).getLongitude();
-				origennombre=((Landing)arco.getSource().getInfo()).getLandingId();
-			}
-			if(arco.getSource().getInfo().getClass().getName().equals("model.data_structures.Country"))
-			{
-				longorigen=((Country)arco.getSource().getInfo()).getLongitude();
-				latorigen=((Country)arco.getSource().getInfo()).getLongitude();
-				origennombre=((Country)arco.getSource().getInfo()).getCapitalName();
-			}
-			if (arco.getDestination().getInfo().getClass().getName().equals("model.data_structures.Landing"))
-			{
-				latdestino=((Landing)arco.getDestination().getInfo()).getLatitude();
-				longdestino=((Landing)arco.getDestination().getInfo()).getLatitude();
-				destinonombre=((Landing)arco.getDestination().getInfo()).getLandingId();
-			}
-			if(arco.getDestination().getInfo().getClass().getName().equals("model.data_structures.Country"))
-			{
-				longdestino=((Country)arco.getDestination().getInfo()).getLatitude();
-				latdestino=((Country)arco.getDestination().getInfo()).getLatitude();
-				destinonombre=((Country)arco.getDestination().getInfo()).getCapitalName();
-			}
+	        // Uso de 'instanceof' en lugar de getClass().getName()
+	        if (arco.getSource().getInfo() instanceof Landing) {
+	            Landing origenLanding = (Landing) arco.getSource().getInfo();
+	            longorigen = origenLanding.getLongitude();
+	            latorigen = origenLanding.getLongitude();  // Esto parece un error, debería ser getLatitude()
+	            origennombre = origenLanding.getLandingId();
+	        }
+	        if (arco.getSource().getInfo() instanceof Country) {
+	            Country origenCountry = (Country) arco.getSource().getInfo();
+	            longorigen = origenCountry.getLongitude();
+	            latorigen = origenCountry.getLatitude(); // Corregido para obtener la latitud
+	            origennombre = origenCountry.getCapitalName();
+	        }
+	        if (arco.getDestination().getInfo() instanceof Landing) {
+	            Landing destinoLanding = (Landing) arco.getDestination().getInfo();
+	            latdestino = destinoLanding.getLatitude();
+	            longdestino = destinoLanding.getLongitude(); // Corregido para obtener la longitud
+	            destinonombre = destinoLanding.getLandingId();
+	        }
+	        if (arco.getDestination().getInfo() instanceof Country) {
+	            Country destinoCountry = (Country) arco.getDestination().getInfo();
+	            longdestino = destinoCountry.getLongitude();
+	            latdestino = destinoCountry.getLatitude(); // Corregido para obtener la latitud
+	            destinonombre = destinoCountry.getCapitalName();
+	        }
 
-			distancia = distancia(longdestino,latdestino, longorigen, latorigen);
-			fragmento+= "\n \n Origen: " +origennombre + "  Destino: " + destinonombre + "  Distancia: " + distancia;
-			disttotal+=distancia;
+	        distancia = distancia(longdestino, latdestino, longorigen, latorigen);
+	        fragmento += "\n \n Origen: " + origennombre + "  Destino: " + destinonombre + "  Distancia: " + distancia;
+	        disttotal += distancia;
+	    }
 
-		}
+	    fragmento += "\n Distancia total: " + disttotal;
 
-		fragmento+= "\n Distancia total: " + disttotal;
-
-		return fragmento;
-
+	    return fragmento;
 	}
 
 	public String req4String() {

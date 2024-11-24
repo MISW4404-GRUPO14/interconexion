@@ -180,15 +180,9 @@ public class TablaHashLinearProbing <K extends Comparable<K>, V extends Comparab
 	}
 
 	@Override
-	public boolean contains(K key) 
-	{
-		V valor=get(key);
-		boolean retornar=false;
-		if (!valor.equals(null))
-		{
-			retornar=true;
-		}
-		return retornar;
+	public boolean contains(K key) {
+	    V valor = get(key);
+	    return valor != null; // Devuelve true si el valor no es null
 	}
 
 	@Override
