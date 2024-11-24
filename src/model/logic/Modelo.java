@@ -280,14 +280,14 @@ public class Modelo {
 	        PilaEncadenada caminoMaximo = calcularCaminoMasLargo(resultados.tabla, resultados.unificado);
 
 	        // Paso 4: Construir el fragmento del resultado
-	        return construirFragmento(resultado, caminoMaximo);
+	        return construirFragmento(resultados, caminoMaximo);
 	    } catch (PosException | VacioException | NullException e) {
 	        e.printStackTrace();
 	        return "No hay ninguna rama";
 	    }
 	}
 
-	private String obtenerLlaveConMayorConexiones() throws PosException {
+	private String obtenerLlaveConMayorConexiones() throws PosException, VacioException {
 	    ILista lista1 = landingidtabla.valueSet();
 	    int max = 0;
 	    String llave = "";
@@ -301,7 +301,7 @@ public class Modelo {
 	    return llave;
 	}
 
-	private ResultadosMST procesarMST(ILista listaMST) throws PosException {
+	private ResultadosMST procesarMST(ILista listaMST) throws PosException, NullException, VacioException {
 	    ITablaSimbolos tabla = new TablaHashSeparteChaining<>(2);
 	    ILista candidatos = new ArregloDinamico<>(1);
 	    int distanciaTotal = 0;
@@ -317,17 +317,17 @@ public class Modelo {
 	    return new ResultadosMST(distanciaTotal, unificado, tabla);
 	}
 
-	private void agregarCandidatos(ILista candidatos, Edge arco) {
+	private void agregarCandidatos(ILista candidatos, Edge arco) throws PosException, NullException {
 	    candidatos.insertElement(arco.getSource(), candidatos.size() + 1);
 	    candidatos.insertElement(arco.getDestination(), candidatos.size() + 1);
 	}
 
-	private PilaEncadenada calcularCaminoMasLargo(ITablaSimbolos tabla, ILista unificado) throws PosException {
+	private PilaEncadenada calcularCaminoMasLargo(ITablaSimbolos tabla, ILista unificado) throws PosException, VacioException {
 	    int maximo = 0;
 	    PilaEncadenada caminoMaximo = new PilaEncadenada();
 
 	    for (int i = 1; i <= unificado.size(); i++) {
-	        String idBusqueda = ((Vertex) unificado.getElement(i)).getId();
+	        String idBusqueda = (String) ((Vertex) unificado.getElement(i)).getId();
 	        PilaEncadenada caminoActual = construirCamino(tabla, idBusqueda);
 
 	        if (caminoActual.size() > maximo) {
@@ -345,7 +345,7 @@ public class Modelo {
 
 	    while ((actual = (Vertex) tabla.get(idActual)) != null && actual.getInfo() != null) {
 	        camino.push(actual);
-	        idActual = actual.getId();
+	        idActual = (String) actual.getId();
 	    }
 	    return camino;
 	}
@@ -376,7 +376,7 @@ public class Modelo {
 	        this.tabla = tabla;
 	    }
 	}
-	public ILista req5(String punto) {
+	public ILista req5(String punto) throws NullException {
 	    // Obtener código del punto y lista de vértices asociados
 	    String codigo = (String) nombrecodigo.get(punto);
 	    ILista listaVertices = (ILista) landingidtabla.get(codigo);
@@ -442,7 +442,7 @@ public class Modelo {
 	    return null;
 	}
 
-	public String req5String(String punto)
+	public String req5String(String punto) throws NullException
 	{
 		ILista afectados= req5(punto);
 
