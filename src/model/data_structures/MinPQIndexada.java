@@ -10,7 +10,6 @@ public class MinPQIndexada<K extends Comparable<K>, IK extends Comparable <IK>, 
         try {
 			arbol.insertElement(new NodoIndexedMinPQ<K, IK, V>(key, indexedKey, value), arbol.size() +1);
 		} catch (PosException | NullException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
         tamano += 1;

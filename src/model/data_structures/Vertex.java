@@ -37,7 +37,6 @@ public class Vertex<K extends Comparable<K>,V  extends Comparable <V>> implement
 		try {
 			arcos.insertElement(edge, arcos.size() +1);
 		} catch (PosException | NullException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -76,7 +75,6 @@ public class Vertex<K extends Comparable<K>,V  extends Comparable <V>> implement
 			} 
 			catch (PosException | VacioException e) 
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -93,7 +91,6 @@ public class Vertex<K extends Comparable<K>,V  extends Comparable <V>> implement
 			try {
 				retorno.insertElement(arcos.getElement(i).getDestination(), retorno.size()+1);
 			} catch (PosException | NullException | VacioException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -170,7 +167,6 @@ public class Vertex<K extends Comparable<K>,V  extends Comparable <V>> implement
 					destino.topologicalOrder(pre, post, reversePost);
 				}
 			} catch (PosException | VacioException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
@@ -205,7 +201,6 @@ public class Vertex<K extends Comparable<K>,V  extends Comparable <V>> implement
 				}
 			} 
 			catch (PosException | VacioException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -227,7 +222,6 @@ public class Vertex<K extends Comparable<K>,V  extends Comparable <V>> implement
 				try {
 					mst.insertElement(actual, mst.size()+1);
 				} catch (PosException | NullException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				addEdgesToMinPQ(cola, dest);
@@ -247,7 +241,6 @@ public class Vertex<K extends Comparable<K>,V  extends Comparable <V>> implement
 			try {
 				actual = inicio.edges().getElement(i);
 			} catch (PosException | VacioException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			cola.insert(actual.getWeight(), actual);
@@ -257,10 +250,6 @@ public class Vertex<K extends Comparable<K>,V  extends Comparable <V>> implement
 	 public static class ComparadorXKey implements Comparator<Vertex<String, Landing>>
 	 {
 
-		/** Comparador alterno de acuerdo al número de likes
-		* @return valor 0 si video1 y video2 tiene los mismos likes.
-		 valor negativo si video1 tiene menos likes que video2.
-		 valor positivo si video1 tiene más likes que video2. */
 		 public int compare(Vertex vertice1, Vertex vertice2) 
 		 {
 			 return ((String)vertice1.getId()).compareToIgnoreCase((String) vertice2.getId());
