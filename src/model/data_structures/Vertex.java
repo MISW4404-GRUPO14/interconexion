@@ -248,6 +248,8 @@ public class Vertex<K extends Comparable<K>,V  extends Comparable <V>> implement
 	            cola.insert(actual.getWeight(), actual);
 	        }
 	    }
+
+
 	}
 	
 	 public static class ComparadorXKey implements Comparator<Vertex<String, Landing>>
