@@ -4,6 +4,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
@@ -265,171 +267,182 @@ public class Modelo {
 
 	}
 
-	public String req4String()
-	{
-		String fragmento="";
-		ILista lista1= landingidtabla.valueSet();
+	public String req4String() {
+	    try {
+	        // Paso 1: Encontrar el vértice con la mayor cantidad de conexiones
+	        String llave = obtenerLlaveConMayorConexiones();
+	        
+	        // Paso 2: Construir la lista del árbol de expansión mínima
+	        ILista listaMST = grafo.mstPrimLazy(llave);
+	        ResultadosMST resultados = procesarMST(listaMST);
 
-		String llave="";
+	        // Paso 3: Identificar la rama más larga
+	        PilaEncadenada caminoMaximo = calcularCaminoMasLargo(resultados.tabla, resultados.unificado);
 
-		int distancia=0;
-
-		try
-		{
-			int max=0;
-			for(int i=1; i<= lista1.size(); i++)
-			{
-				if(((ILista)lista1.getElement(i)).size()> max)
-				{
-					max= ((ILista)lista1.getElement(i)).size();
-					llave= (String) ((Vertex)((ILista)lista1.getElement(i)).getElement(1)).getId();
-				}
-			}
-
-			ILista lista2= grafo.mstPrimLazy(llave);
-
-			ITablaSimbolos tabla= new TablaHashSeparteChaining<>(2);
-			ILista candidatos= new ArregloDinamico<>(1);
-			for(int i=1; i<= lista2.size(); i++)
-			{
-				Edge arco= ((Edge) lista2.getElement(i));
-				distancia+= arco.getWeight();
-
-				candidatos.insertElement(arco.getSource(), candidatos.size()+1);
-
-				candidatos.insertElement(arco.getDestination(), candidatos.size()+1);
-
-				tabla.put(arco.getDestination().getId(),arco.getSource() );
-			}
-
-			ILista unificado= unificar(candidatos, "Vertice");
-			fragmento+= " La cantidad de nodos conectada a la red de expansión mínima es: " + unificado.size() + "\n El costo total es de: " + distancia;
-
-			int maximo=0;
-			int contador=0;
-			PilaEncadenada caminomax=new PilaEncadenada();
-			for(int i=1; i<= unificado.size(); i++)
-			{
-
-				PilaEncadenada path= new PilaEncadenada();
-				String idBusqueda= (String) ((Vertex) unificado.getElement(i)).getId();
-				Vertex actual;
-
-				while( (actual= (Vertex) tabla.get(idBusqueda))!=null && actual.getInfo()!=null)
-				{
-					path.push(actual);
-					idBusqueda= (String) ((Vertex)actual).getId();
-					contador++;
-				}
-
-				if(contador>maximo)
-				{
-					caminomax=path;
-				}
-			}
-
-			fragmento+="\n La rama más larga está dada por lo vértices: ";
-			for(int i=1; i<=caminomax.size(); i++)
-			{
-				Vertex pop= (Vertex) caminomax.pop();
-				fragmento+= "\n Id " + i + " : "+ pop.getId();
-			}
-		}
-		catch (PosException | VacioException | NullException e1)
-		{
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-
-		if(fragmento.equals(""))
-		{
-			return "No hay ninguna rama";
-		}
-		else
-		{
-			return fragmento;
-		}
+	        // Paso 4: Construir el fragmento del resultado
+	        return construirFragmento(resultados, caminoMaximo);
+	    } catch (PosException | VacioException | NullException e) {
+	        e.printStackTrace();
+	        return "No hay ninguna rama";
+	    }
 	}
 
-	public ILista req5(String punto)
-	{
-		String codigo= (String) nombrecodigo.get(punto);
-		ILista lista= (ILista) landingidtabla.get(codigo);
-
-		ILista countries= new ArregloDinamico<>(1);
-		try
-		{
-			Country paisoriginal=(Country) paises.get(((Landing) ((Vertex)lista.getElement(1)).getInfo()).getPais());
-			countries.insertElement(paisoriginal, countries.size() + 1);
-		}
-		catch (PosException | VacioException | NullException e1)
-		{
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-
-		for(int i=1; i<= lista.size(); i++)
-		{
-			try
-			{
-				Vertex vertice= (Vertex) lista.getElement(i);
-				ILista arcos= vertice.edges();
-
-				for(int j=1; j<= arcos.size(); j++)
-				{
-					Vertex vertice2= ((Edge) arcos.getElement(j)).getDestination();
-
-					Country pais=null;
-					if (vertice2.getInfo().getClass().getName().equals("model.data_structures.Landing"))
-					{
-						Landing landing= (Landing) vertice2.getInfo();
-						pais= (Country) paises.get(landing.getPais());
-						countries.insertElement(pais, countries.size() + 1);
-
-						float distancia= distancia(pais.getLongitude(), pais.getLatitude(), landing.getLongitude(), landing.getLatitude());
-
-						pais.setDistlan(distancia);
-					}
-					else
-					{
-						pais=(Country) vertice2.getInfo();
-					}
-				}
-
-			} catch (PosException | VacioException | NullException e)
-			{
-				e.printStackTrace();
-			}
-		}
-
-		ILista unificado= unificar(countries, "Country");
-
-		Comparator<Country> comparador=null;
-
-		OrdenamientoContexto<Country> algsOrdenamientoEventos=new OrdenamientoContexto<Country>();
-
-		comparador= new ComparadorXKm();
-
-		try
-		{
-
-			if (lista!=null)
-			{
-				algsOrdenamientoEventos.ordenar(lista, comparador, false);
-			}
-		}
-		catch (PosException | VacioException| NullException  e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		return unificado;
-
-
+	private String obtenerLlaveConMayorConexiones() throws PosException, VacioException {
+	    ILista lista1 = landingidtabla.valueSet();
+	    int max = 0;
+	    String llave = "";
+	    for (int i = 1; i <= lista1.size(); i++) {
+	        ILista elementos = (ILista) lista1.getElement(i);
+	        if (elementos.size() > max) {
+	            max = elementos.size();
+	            llave = (String) ((Vertex) elementos.getElement(1)).getId();
+	        }
+	    }
+	    return llave;
 	}
 
-	public String req5String(String punto)
+	private ResultadosMST procesarMST(ILista listaMST) throws PosException, NullException, VacioException {
+	    ITablaSimbolos tabla = new TablaHashSeparteChaining<>(2);
+	    ILista candidatos = new ArregloDinamico<>(1);
+	    int distanciaTotal = 0;
+
+	    for (int i = 1; i <= listaMST.size(); i++) {
+	        Edge arco = (Edge) listaMST.getElement(i);
+	        distanciaTotal += arco.getWeight();
+	        agregarCandidatos(candidatos, arco);
+	        tabla.put(arco.getDestination().getId(), arco.getSource());
+	    }
+
+	    ILista unificado = unificar(candidatos, "Vertice");
+	    return new ResultadosMST(distanciaTotal, unificado, tabla);
+	}
+
+	private void agregarCandidatos(ILista candidatos, Edge arco) throws PosException, NullException {
+	    candidatos.insertElement(arco.getSource(), candidatos.size() + 1);
+	    candidatos.insertElement(arco.getDestination(), candidatos.size() + 1);
+	}
+
+	private PilaEncadenada calcularCaminoMasLargo(ITablaSimbolos tabla, ILista unificado) throws PosException, VacioException {
+	    int maximo = 0;
+	    PilaEncadenada caminoMaximo = new PilaEncadenada();
+
+	    for (int i = 1; i <= unificado.size(); i++) {
+	        String idBusqueda = (String) ((Vertex) unificado.getElement(i)).getId();
+	        PilaEncadenada caminoActual = construirCamino(tabla, idBusqueda);
+
+	        if (caminoActual.size() > maximo) {
+	            maximo = caminoActual.size();
+	            caminoMaximo = caminoActual;
+	        }
+	    }
+	    return caminoMaximo;
+	}
+
+	private PilaEncadenada construirCamino(ITablaSimbolos tabla, String idInicial) {
+	    PilaEncadenada camino = new PilaEncadenada();
+	    String idActual = idInicial;
+	    Vertex actual;
+
+	    while ((actual = (Vertex) tabla.get(idActual)) != null && actual.getInfo() != null) {
+	        camino.push(actual);
+	        idActual = (String) actual.getId();
+	    }
+	    return camino;
+	}
+
+	private String construirFragmento(ResultadosMST resultados, PilaEncadenada caminoMaximo) {
+	    StringBuilder fragmento = new StringBuilder();
+	    fragmento.append("La cantidad de nodos conectados a la red de expansión mínima es: ")
+	            .append(resultados.unificado.size())
+	            .append("\nEl costo total es de: ")
+	            .append(resultados.distanciaTotal)
+	            .append("\nLa rama más larga está dada por los vértices: ");
+
+	    for (int i = 1; i <= caminoMaximo.size(); i++) {
+	        Vertex vertice = (Vertex) caminoMaximo.pop();
+	        fragmento.append("\nId ").append(i).append(" : ").append(vertice.getId());
+	    }
+	    return fragmento.toString();
+	}
+
+	private static class ResultadosMST {
+	    int distanciaTotal;
+	    ILista unificado;
+	    ITablaSimbolos tabla;
+
+	    public ResultadosMST(int distanciaTotal, ILista unificado, ITablaSimbolos tabla) {
+	        this.distanciaTotal = distanciaTotal;
+	        this.unificado = unificado;
+	        this.tabla = tabla;
+	    }
+	}
+	public ILista req5(String punto) throws NullException {
+	    // Obtener código del punto y lista de vértices asociados
+	    String codigo = (String) nombrecodigo.get(punto);
+	    ILista listaVertices = (ILista) landingidtabla.get(codigo);
+
+	    if (listaVertices == null) {
+	        return new ArregloDinamico<>(1); // Retornar lista vacía si no hay vértices asociados
+	    }
+
+	    // Lista para almacenar países afectados
+	    ILista paisesAfectados = new ArregloDinamico<>(1);
+
+	    try {
+	        // Agregar el país del punto original
+	        Landing landingInicial = (Landing) ((Vertex) listaVertices.getElement(1)).getInfo();
+	        Country paisInicial = (Country) paises.get(landingInicial.getPais());
+	        if (paisInicial != null) {
+	            paisesAfectados.insertElement(paisInicial, paisesAfectados.size() + 1);
+	        }
+
+	        // Procesar todos los vértices conectados
+	        for (int i = 1; i <= listaVertices.size(); i++) {
+	            Vertex vertice = (Vertex) listaVertices.getElement(i);
+	            ILista arcos = vertice.edges();
+
+	            for (int j = 1; j <= arcos.size(); j++) {
+	                Edge arco = (Edge) arcos.getElement(j);
+	                Vertex destino = arco.getDestination();
+	                Country paisDestino = obtenerPaisDesdeVertice(destino);
+
+	                if (paisDestino != null) {
+	                    // Calcular y asignar la distancia solo si aplica
+	                    if (destino.getInfo() instanceof Landing) {
+	                        Landing landingDestino = (Landing) destino.getInfo();
+	                        float distancia = distancia(
+	                            paisDestino.getLongitude(), paisDestino.getLatitude(),
+	                            landingDestino.getLongitude(), landingDestino.getLatitude()
+	                        );
+	                        paisDestino.setDistlan(distancia);
+	                    }
+	                    paisesAfectados.insertElement(paisDestino, paisesAfectados.size() + 1);
+	                }
+	            }
+	        }
+	    } catch (PosException | VacioException | NullException e) {
+	        e.printStackTrace();
+	    }
+
+	    // Unificar lista de países para eliminar duplicados
+	    return unificar(paisesAfectados, "Country");
+	}
+
+	private Country obtenerPaisDesdeVertice(Vertex vertice) {
+	    try {
+	        if (vertice.getInfo() instanceof Landing) {
+	            Landing landing = (Landing) vertice.getInfo();
+	            return (Country) paises.get(landing.getPais());
+	        } else if (vertice.getInfo() instanceof Country) {
+	            return (Country) vertice.getInfo();
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    return null;
+	}
+
+	public String req5String(String punto) throws NullException
 	{
 		ILista afectados= req5(punto);
 
@@ -450,121 +463,38 @@ public class Modelo {
 
 	}
 
-	public ILista unificar(ILista lista, String criterio)
-	{
+	public ILista unificar(ILista lista, String criterio) throws NullException {
+	    if (lista == null || lista.size() == 0) {
+	        return new ArregloDinamico<>(1); // Retornar lista vacía si no hay elementos
+	    }
 
-		ILista lista2=new ArregloDinamico(1);
+	    ILista listaUnificada = new ArregloDinamico<>(1);
+	    Set<Object> elementosVistos = new HashSet<>();
 
-		if(criterio.equals("Vertice"))
-		{
-			Comparator<Vertex<String, Landing>> comparador=null;
+	    try {
+	        for (int i = 1; i <= lista.size(); i++) {
+	            Object actual = lista.getElement(i);
+	            Object clave = obtenerClave(actual, criterio);
 
-			OrdenamientoContexto<Vertex<String, Landing>> algsOrdenamientoEventos=new OrdenamientoContexto<Vertex<String, Landing>>();;
+	            if (clave != null && !elementosVistos.contains(clave)) {
+	                elementosVistos.add(clave);
+	                listaUnificada.insertElement((Comparable) actual, listaUnificada.size() + 1);
+	            }
+	        }
+	    } catch (PosException | VacioException e) {
+	        e.printStackTrace();
+	    }
 
-			comparador= new Vertex.ComparadorXKey();
+	    return listaUnificada;
+	}
 
-
-			try
-			{
-
-				if (lista!=null)
-				{
-					algsOrdenamientoEventos.ordenar(lista, comparador, false);
-
-					for(int i=1; i<=lista.size(); i++)
-					{
-						Vertex actual= (Vertex) lista.getElement(i);
-						Vertex siguiente= (Vertex) lista.getElement(i+1);
-
-						if(siguiente!=null)
-						{
-							if(comparador.compare(actual, siguiente)!=0)
-							{
-								lista2.insertElement(actual, lista2.size()+1);
-							}
-						}
-						else
-						{
-							Vertex anterior= (Vertex) lista.getElement(i-1);
-
-							if(anterior!=null)
-							{
-								if(comparador.compare(anterior, actual)!=0)
-								{
-									lista2.insertElement(actual, lista2.size()+1);
-								}
-							}
-							else
-							{
-								lista2.insertElement(actual, lista2.size()+1);
-							}
-						}
-
-					}
-				}
-			}
-			catch (PosException | VacioException| NullException  e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		else
-		{
-			Comparator<Country> comparador=null;
-
-			OrdenamientoContexto<Country> algsOrdenamientoEventos=new OrdenamientoContexto<Country>();;
-
-			comparador= new Country.ComparadorXNombre();
-
-			try
-			{
-
-				if (lista!=null)
-				{
-					algsOrdenamientoEventos.ordenar(lista, comparador, false);
-				}
-
-					for(int i=1; i<=lista.size(); i++)
-					{
-						Country actual= (Country) lista.getElement(i);
-						Country siguiente= (Country) lista.getElement(i+1);
-
-						if(siguiente!=null)
-						{
-							if(comparador.compare(actual, siguiente)!=0)
-							{
-								lista2.insertElement(actual, lista2.size()+1);
-							}
-						}
-						else
-						{
-							Country anterior= (Country) lista.getElement(i-1);
-
-							if(anterior!=null)
-							{
-								if(comparador.compare(anterior, actual)!=0)
-								{
-									lista2.insertElement(actual, lista2.size()+1);
-								}
-							}
-							else
-							{
-								lista2.insertElement(actual, lista2.size()+1);
-							}
-						}
-
-					}
-				}
-
-			catch (PosException | VacioException| NullException  e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-
-		return lista2;
+	private Object obtenerClave(Object elemento, String criterio) {
+	    if ("Vertice".equals(criterio) && elemento instanceof Vertex) {
+	        return ((Vertex<?, ?>) elemento).getId(); // Usar el ID del vértice como clave
+	    } else if ("Country".equals(criterio) && elemento instanceof Country) {
+	        return ((Country) elemento).getCountryName(); // Usar el nombre del país como clave
+	    }
+	    return null;
 	}
 
 	public ITablaSimbolos unificarHash(ILista lista)

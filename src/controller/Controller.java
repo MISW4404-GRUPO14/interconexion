@@ -2,6 +2,8 @@ package controller;
 
 import java.io.IOException;
 import java.util.Scanner;
+
+import model.data_structures.NullException;
 import model.logic.Modelo;
 
 public class Controller {
@@ -12,7 +14,7 @@ public class Controller {
         this.modelo = modelo;
     }
 
-    public void run() {
+    public void run() throws NullException {
         Scanner lector = new Scanner(System.in).useDelimiter("\n");
         boolean fin = false;
 
@@ -98,7 +100,7 @@ public class Controller {
         printMessage(resultado);
     }
 
-    private void ejecutarReq5(Scanner lector) {
+    private void ejecutarReq5(Scanner lector) throws NullException {
         printMessage("--------- \nIngrese el nombre del punto de conexión");
         String landing = lector.next();
         lector.nextLine();

@@ -191,55 +191,50 @@ public class ListaEncadenada <T extends Comparable <T>> implements ILista<T>{
 		
 	}
 	
-	public T deleteElement(int pos) throws PosException, VacioException
-	{
-		T retorno=null;
-		
-		 if (pos<1 || pos >size)
-		 {
-			 throw new PosException("La posición no es válida");
-		 }
-		 else if (isEmpty())
-		 {
-			 throw new VacioException("La lista está vacía");
-		 }
-		 else
-		 {
-			if ( pos==1)
-			{
-				retorno=removeFirst();
-			}
-			else if (pos==size())
-			{
-				retorno=removeLast();
-			}
-			else 
-			{
-				Nodo<T> actual= first;
-				if(actual.getNext()!=null) 
-				{	
-					Nodo<T> anterior=null;
-					while(actual.getNext()!=null && !actual.getInfo().equals(getElement(pos-1)))
-					{
-						anterior=actual;
-						actual=actual.getNext();
-					}
-					retorno=actual.getInfo();
-					anterior.disconnectNext(anterior);
-				}
-				else 
-				{
-					Nodo<T> anterior=null;
-					
-					retorno=actual.getInfo();
-					anterior.disconnectNext(anterior);
-				}
-			}
-		}
-		
-		size--;
-		
-		return retorno;
+	public T deleteElement(int pos) throws PosException, VacioException {
+	    validatePosition(pos);
+	    validateNotEmpty();
+
+	    T retorno;
+
+	    if (pos == 1) {
+	        retorno = removeFirst();
+	    } else if (pos == size) {
+	        retorno = removeLast();
+	    } else {
+	        retorno = removeAtPosition(pos);
+	    }
+
+	    size--;
+	    return retorno;
+	}
+
+	private void validatePosition(int pos) throws PosException {
+	    if (pos < 1 || pos > size) {
+	        throw new PosException("La posición no es válida");
+	    }
+	}
+
+	private void validateNotEmpty() throws VacioException {
+	    if (isEmpty()) {
+	        throw new VacioException("La lista está vacía");
+	    }
+	}
+
+	private T removeAtPosition(int pos) {
+	    Nodo<T> anterior = null;
+	    Nodo<T> actual = first;
+
+	    for (int i = 1; i < pos; i++) {
+	        anterior = actual;
+	        actual = actual.getNext();
+	    }
+
+	    if (anterior != null) {
+	        anterior.disconnectNext(anterior);
+	    }
+
+	    return actual.getInfo();
 	}
 	
 	public T firstElement() throws VacioException
