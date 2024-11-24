@@ -41,7 +41,12 @@ public class ArregloDinamico<T extends Comparable<T>> implements ILista<T> {
                      	 elementos[i] = copia[i];
                     } 
                }	
-               elementos[tamanoAct] = dato;
+               if (tamanoAct < tamanoMax) { 
+                   elementos[tamanoAct] = dato;
+                   tamanoAct++; 
+               } else {
+                   throw new IllegalStateException("El índice actual excede el tamaño del arreglo.");
+               }
        }
 
 		public int darCapacidad() {
@@ -421,29 +426,21 @@ public class ArregloDinamico<T extends Comparable<T>> implements ILista<T> {
 		}
 		
 		@Override
-		public void changeInfo(int pos, T element) throws PosException, VacioException, NullException 
-		{
-			if (pos<1 || pos >tamanoMax)
-			{
-				 throw new PosException("La posición no es válida");
-			}
-			else if (pos >tamanoMax)
-			{
-				 throw new PosException("La posición no es válida");
-			}
-			else if (isEmpty())
-			{
-				throw new VacioException("La lista está vacía");
-			}
-			else if(element==null)
-			{
-				throw new NullException("No es válido el elemento ingresado");
-			}
-			else
-			{
-				elementos[pos-1]=element;
-			}
-			
+		public void changeInfo(int pos, T element) throws PosException, VacioException, NullException {
+		    if (isEmpty()) {
+		        throw new VacioException("La lista está vacía");
+		    }
+
+		    if (pos < 1 || pos > tamanoAct) { // Validar rango válido basado en el tamaño actual
+		        throw new PosException("La posición no es válida");
+		    }
+
+		    if (element == null) {
+		        throw new NullException("No es válido el elemento ingresado");
+		    }
+
+		    // Actualizar el elemento en la posición indicada
+		    elementos[pos - 1] = element;
 		}
 		
 		public ILista<T> sublista(int pos, int numElementos) throws PosException, VacioException, NullException

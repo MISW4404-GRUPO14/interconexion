@@ -231,20 +231,25 @@ public class Vertex<K extends Comparable<K>,V  extends Comparable <V>> implement
 		
 	}
 	
-	private void addEdgesToMinPQ(MinPQ<Float, Edge<K, V>> cola, Vertex<K, V> inicio)
-	{
-		inicio.mark();
-		
-		for(int i=1; i<= inicio.edges().size(); i++)
-		{
-			Edge<K, V> actual=null;
-			try {
-				actual = inicio.edges().getElement(i);
-			} catch (PosException | VacioException e) {
-				e.printStackTrace();
-			}
-			cola.insert(actual.getWeight(), actual);
-		}
+	private void addEdgesToMinPQ(MinPQ<Float, Edge<K, V>> cola, Vertex<K, V> inicio) {
+	    inicio.mark();
+
+	   
+	    for (int i = 0; i < inicio.edges().size(); i++) { 
+	        Edge<K, V> actual = null;
+	        try {
+	            actual = inicio.edges().getElement(i);
+	        } catch (PosException | VacioException e) {
+	         
+	            e.printStackTrace();
+	            continue; 
+	        }
+	        if (actual != null) {
+	            cola.insert(actual.getWeight(), actual);
+	        }
+	    }
+
+
 	}
 	
 	 public static class ComparadorXKey implements Comparator<Vertex<String, Landing>>
